@@ -6,8 +6,8 @@ RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y \
     build-essential \
-	bc \
-	libguestfs-tools \
+    bc \
+    golang \
   && apt-get clean
 
 WORKDIR /kernel-build
@@ -19,9 +19,6 @@ RUN cd linux-4.7 \
  && make x86_64_defconfig kvmconfig \
  && make -j16
 
-
-
-RUN apt-get install -y golang
 
 COPY ./src /initfs
 WORKDIR /initfs
