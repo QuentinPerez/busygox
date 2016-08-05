@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+	"runtime/debug"
 	"time"
 )
 
@@ -22,20 +22,9 @@ func banner() {
 	fmt.Println("")
 }
 
-func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Fprintf(os.Stderr, "%s", r)
-		}
-		for {
-			time.Sleep(24 * time.Hour)
-		}
-	}()
-
+func entrypoint() (err error) {
 	banner()
-	err := setup()
-	if err != nil {
-		log.Fatal(err)
+	if err = setup(); err != nil {
 		return
 	}
 
@@ -48,5 +37,21 @@ func main() {
 
 	for _, file := range files {
 		fmt.Println(file.Name())
+	}
+	return
+}
+
+func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "Error -> %s\n", r)
+			fmt.Fprintf(os.Stderr, "Backtrace -> %s\n", debug.Stack())
+		}
+		for {
+			time.Sleep(24 * time.Hour)
+		}
+	}()
+	if err := entrypoint(); err != nil {
+		panic(err)
 	}
 }

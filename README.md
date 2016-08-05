@@ -4,7 +4,7 @@
 
 (POC) Busybox like written in golang
 
-#### Instruction
+#### Instructions
 
 ```console
 $ docker build -t busygox .
