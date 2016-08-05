@@ -36,7 +36,7 @@ RUN cd fs \
   && mkdir -vm 0755 run \
   && mkdir -v proc sys
 
-RUN go build -o fs/init main.go \
+RUN go build -o fs/init *.go \
   && cd fs && find . -print0 | cpio --null -ov --format=newc > ../initramfs.cpio \
   && ldd init || true
 

@@ -3,33 +3,12 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
-	"syscall"
 	"time"
 )
 
-func mountPseudoFS() (err error) {
-	// mount /dev
-	if err = syscall.Mount("none", "/dev", "devtmpfs", syscall.MS_MGC_VAL, "mode=755"); err != nil {
-		return
-	}
-	// mount /run
-	if err = syscall.Mount("tmpfs", "/run", "tmpfs", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV, "mode=0755,size=10%"); err != nil {
-		return
-	}
-	// mount /sys
-	if err = syscall.Mount("none", "/sys", "sysfs", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC, ""); err != nil {
-		return
-	}
-	// mount /proc
-	if err = syscall.Mount("none", "/proc", "proc", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC, ""); err != nil {
-		return
-	}
-	return
-}
-
-func main() {
-	time.Sleep(1 * time.Second)
+func banner() {
 	fmt.Println("")
 	fmt.Println("")
 	fmt.Println(`  ___   wWw  wWw  oo_   wWw  wWw   \/       .-.    wW    Ww`)
@@ -41,19 +20,26 @@ func main() {
 	fmt.Println(" (.'-'   `-..-' (_..--' (_.'     `-.(_.'  `-...-' (_.'  `._)")
 	fmt.Println("")
 	fmt.Println("")
+}
 
+func main() {
 	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "%s", r)
+		}
 		for {
 			time.Sleep(24 * time.Hour)
 		}
 	}()
 
-	err := mountPseudoFS()
+	banner()
+	err := setup()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s", err)
+		log.Fatal(err)
 		return
 	}
 
+	// test
 	files, err := ioutil.ReadDir("/proc")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s", err)
