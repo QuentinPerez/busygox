@@ -23,6 +23,19 @@ func banner() {
 	fmt.Println("")
 }
 
+func listDir(dir string) (err error) {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(dir, " # from /dev/sda")
+	for _, file := range files {
+		fmt.Println(" ", file.Name())
+	}
+	return
+}
+
 func entrypoint() (err error) {
 	banner()
 	if err = setup(); err != nil {
@@ -30,15 +43,14 @@ func entrypoint() (err error) {
 	}
 
 	// test
-	files, err := ioutil.ReadDir("/rootfs")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s", err)
-		return
-	}
-
-	fmt.Println("/rootfs # /dev/sda")
-	for _, file := range files {
-		fmt.Println(" ", file.Name())
+	if listDir("/rootfs/etc/update-motd.d/") != nil {
+		err = listDir("/rootfs/")
+	} else {
+		fmt.Println("-> reading 50-scw")
+		file, err := ioutil.ReadFile("/rootfs/etc/update-motd.d/50-scw")
+		if err == nil {
+			fmt.Println(string(file))
+		}
 	}
 	return
 }
