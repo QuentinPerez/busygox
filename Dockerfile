@@ -24,7 +24,7 @@ RUN cd linux-4.7 \
 
 WORKDIR /initfs/
 
-RUN qemu-img create -f raw disk.img 10M \
+RUN qemu-img create -f raw disk.img 500M \
   && echo -e "n\np\n1\n\n\nw" | fdisk disk.img \
   && echo "y" | mkfs.ext4 disk.img \
   && mkdir fs
