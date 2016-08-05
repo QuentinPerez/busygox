@@ -8,6 +8,8 @@
 
 ```console
 $ docker build -t busygox .
-$ docker run --rm -it -v $(pwd)/kernel:/kernel busygox
-$ qemu-system-x86_64 -kernel kernel/bzImage -initrd kernel/initramfs.cpio
+$ docker run --rm -it -v $(pwd)/build:/build busygox
+# (OS X) brew install qemu
+# (Debian based) apt-get install qemu-system
+$ qemu-system-x86_64 -kernel build/bzImage -initrd build/initramfs.cpio -drive format=raw,file=build/disk.img
 ```
