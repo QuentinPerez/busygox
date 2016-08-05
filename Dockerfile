@@ -29,15 +29,21 @@ RUN qemu-img create -f raw disk.img 10M \
   && echo "y" | mkfs.ext4 disk.img \
   && mkdir fs
 
-COPY ./src /initfs
+# Setup go
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-RUN cd fs \
+RUN cd /initfs/fs \
   && mkdir -vm 0755 dev \
   && mkdir -vm 0755 run \
   && mkdir -v proc sys
 
-RUN go build -o fs/init *.go \
-  && cd fs && find . -print0 | cpio --null -ov --format=newc > ../initramfs.cpio \
+COPY . $GOPATH/src/github.com/QuentinPerez/busygox
+
+RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
+  && go build -o /initfs/fs/init ./cmd/init \
+  && cd /initfs/fs && find . -print0 | cpio --null -ov --format=newc > /initfs/initramfs.cpio \
   && ldd init || true
 
-CMD ["/initfs/entrypoint.sh"]
+CMD ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
