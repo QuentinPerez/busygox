@@ -30,14 +30,15 @@ func entrypoint() (err error) {
 	}
 
 	// test
-	files, err := ioutil.ReadDir("/dev")
+	files, err := ioutil.ReadDir("/rootfs")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s", err)
 		return
 	}
 
+	fmt.Println("/rootfs # /dev/sda")
 	for _, file := range files {
-		fmt.Println(file.Name())
+		fmt.Println(" ", file.Name())
 	}
 	return
 }

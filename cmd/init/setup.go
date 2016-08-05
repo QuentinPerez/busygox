@@ -37,6 +37,14 @@ func mountPseudoFS() (err error) {
 		err = errors.Annotate(err, "Unable to mount /proc")
 		return
 	}
+	if err = syscall.Mkdir("/rootfs", 0777); err != nil {
+		err = errors.Annotate(err, "Unable to create /rootfs")
+		return
+	}
+	if err = syscall.Mount("/dev/sda", "/rootfs", "ext4", syscall.MS_MGC_VAL, ""); err != nil {
+		err = errors.Annotate(err, "Unable to mount /dev/sda")
+		return
+	}
 	return
 }
 
