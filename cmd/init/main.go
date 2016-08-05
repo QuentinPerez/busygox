@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// test
-	files, err := ioutil.ReadDir("/proc")
+	files, err := ioutil.ReadDir("/dev")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s", err)
 		return
