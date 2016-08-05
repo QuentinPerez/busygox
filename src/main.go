@@ -3,11 +3,30 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"syscall"
 	"time"
 )
+
+func mountPseudoFS() (err error) {
+	// mount /dev
+	if err = syscall.Mount("none", "/dev", "devtmpfs", syscall.MS_MGC_VAL, "mode=755"); err != nil {
+		return
+	}
+	// mount /run
+	if err = syscall.Mount("tmpfs", "/run", "tmpfs", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV, "mode=0755,size=10%"); err != nil {
+		return
+	}
+	// mount /sys
+	if err = syscall.Mount("none", "/sys", "sysfs", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC, ""); err != nil {
+		return
+	}
+	// mount /proc
+	if err = syscall.Mount("none", "/proc", "proc", syscall.MS_MGC_VAL|syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC, ""); err != nil {
+		return
+	}
+	return
+}
 
 func main() {
 	time.Sleep(1 * time.Second)
@@ -22,19 +41,26 @@ func main() {
 	fmt.Println(" (.'-'   `-..-' (_..--' (_.'     `-.(_.'  `-...-' (_.'  `._)")
 	fmt.Println("")
 	fmt.Println("")
-	err := syscall.Mount("none", "/dev", "devtmpfs", syscall.MS_MGC_VAL, "mode=755")
+
+	defer func() {
+		for {
+			time.Sleep(24 * time.Hour)
+		}
+	}()
+
+	err := mountPseudoFS()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Sorry %s", err)
+		fmt.Fprintf(os.Stderr, "Error: %s", err)
+		return
 	}
-	files, err := ioutil.ReadDir("/dev")
+
+	files, err := ioutil.ReadDir("/proc")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "Error: %s", err)
+		return
 	}
 
 	for _, file := range files {
 		fmt.Println(file.Name())
-	}
-	for {
-		time.Sleep(24 * time.Hour)
 	}
 }
