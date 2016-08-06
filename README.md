@@ -115,3 +115,11 @@ printf "Image source:\t%s\n" "$IMAGE_SOURCE_URL"
 printf "\n"
 [ -f /etc/motd.tail ] && cat /etc/motd.tail || true
 ```
+
+#### Good to know
+
+This repository is for educational use only.
+
+#### Development
+
+Feel free to contribute 😃 🍻
