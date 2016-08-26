@@ -1,5 +1,10 @@
 #!/bin/bash
-cp -v /kernel-build/linux-4.7/arch/x86_64/boot/bzImage /initfs/initramfs.cpio /initfs/disk.img /build
+cp -v /kernel-build/linux-4.7/arch/x86_64/boot/bzImage /initfs/initramfs.cpio /build
+if [ ! -f /build/disk.img ];
+then
+	cp -v /initfs/disk.img /build
+fi
+
 echo ""
 echo "Done ! now you can run the following command"
 echo ""

@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime/debug"
+	"syscall"
 	"time"
+
+	"github.com/juju/errors"
 )
 
 func banner() {
@@ -31,9 +35,45 @@ func listDir(dir string) (err error) {
 
 	fmt.Println(dir, " # from /dev/sda")
 	for _, file := range files {
-		fmt.Println(" ", file.Name())
+		fmt.Printf("[%s]\n", file.Name())
 	}
 	return
+}
+
+func delete_content(newroot string) (err error) {
+	err = filepath.Walk("/rootfs", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		fmt.Println(path)
+		return nil
+	})
+	return
+}
+
+func switch_root() (err error) {
+	if err = syscall.Chdir("/rootfs"); err != nil {
+		err = errors.Annotate(err, "Unable to change directory (/rootfs)")
+		return
+	}
+	if err = syscall.Mount(".", "/", "", syscall.MS_MOVE, ""); err != nil {
+		err = errors.Annotate(err, "Unable to mount /rootfs")
+		return
+	}
+	if err = syscall.Chroot("."); err != nil {
+		err = errors.Annotate(err, "Unable to chroot")
+		return
+	}
+	if err = syscall.Chdir("/"); err != nil {
+		err = errors.Annotate(err, "Unable to change directory (/rootfs)")
+		return
+	}
+	if err = syscall.Exec("/sbin/init", []string{"/sbin/init"}, []string{}); err != nil {
+		err = errors.Annotate(err, "Execve /sbin/init")
+		return
+	}
+	return
+	// fmt.Println(delete_content("/newroot"))
 }
 
 func entrypoint() (err error) {
@@ -41,17 +81,12 @@ func entrypoint() (err error) {
 	if err = setup(); err != nil {
 		return
 	}
-
 	// test
-	if listDir("/rootfs/etc/update-motd.d/") != nil {
-		err = listDir("/rootfs/")
-	} else {
-		fmt.Println("-> reading 50-scw")
-		file, err := ioutil.ReadFile("/rootfs/etc/update-motd.d/50-scw")
-		if err == nil {
-			fmt.Println(string(file))
-		}
-	}
+	// if listDir("/rootfs/etc/update-motd.d/") != nil {
+	// 	err = listDir("/rootfs/")
+	// } else {
+	err = switch_root()
+	// }
 	return
 }
 

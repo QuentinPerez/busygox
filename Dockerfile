@@ -42,8 +42,9 @@ RUN cd /initfs/fs \
 COPY . $GOPATH/src/github.com/QuentinPerez/busygox
 
 RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
-  && CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s' -o /initfs/fs/init ./cmd/init \
+  && CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s -w' -o /initfs/fs/init ./cmd/init \
   && cd /initfs/fs && find . -print0 | cpio --null -ov --format=newc > /initfs/initramfs.cpio \
-  && ldd init || true
+  && ldd init || true \
+  && du -h /initfs/initramfs.cpio
 
 CMD ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
