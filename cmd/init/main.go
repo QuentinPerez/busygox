@@ -73,7 +73,6 @@ func switch_root() (err error) {
 		return
 	}
 	return
-	// fmt.Println(delete_content("/newroot"))
 }
 
 func entrypoint() (err error) {
