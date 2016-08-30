@@ -47,4 +47,6 @@ RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
   && ldd init || true \
   && du -h /initfs/initramfs.cpio
 
+RUN go version
+
 CMD ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
