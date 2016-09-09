@@ -49,4 +49,4 @@ RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
 
 RUN go version
 
-CMD ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
+ENTRYPOINT ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
