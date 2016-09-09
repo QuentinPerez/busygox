@@ -487,7 +487,17 @@ See 'systemctl status scw-sync-kernel-modules.service' for details.
 
 Ubuntu 16.04 LTS localhost ttyS0
 
-localhost login:
+localhost login: root
+root@localhost:~# ls -la
+total 13
+drwx------  4 root root 1024 Aug  5 21:02 .
+drwxr-xr-x 22 root root 1024 Aug  5 21:08 ..
+-rw-r--r--  1 root root 3106 Oct 22  2015 .bashrc
+drwx------  2 root root 1024 Sep  9 00:46 .cache
+-rw-r--r--  1 root root  148 Aug 17  2015 .profile
+-rw-r--r--  1 root root 1240 Aug  5 21:02 .s3cfg.sample
+drwx------  2 root root 1024 Aug  5 21:02 .ssh
+-rw-------  1 root root 1201 Sep  9 00:54 .viminfo
 ```
 
 #### Good to know
