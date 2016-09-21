@@ -9,9 +9,18 @@
 ```console
 $ docker build -t busygox .
 $ docker run --rm -it -v $(pwd)/build:/build busygox
-# (OS X) brew install qemu
-# (Debian based) apt-get install qemu-system
-$ qemu-system-x86_64  -boot once=c -nographic -kernel build/bzImage -initrd build/initramfs.cpio -drive format=raw,file=build/disk.img --append "console=ttyS0 nousb quiet root=/dev/sda1 rootfstype=ext4 selinux=0" -m 1024
+# the following instructions only works for MacOS
+$ brew install qemu
+$ brew install Caskroom/cask/tuntap
+$ sudo ifconfig bridge1 create
+$ sudo ifconfig bridge1 192.168.2.1/24
+$ sysctl -w net.inet.ip.forwarding=1
+$ sudo pfctl -F all # This flushes all active rules
+$ sudo pfctl -f nat.config -e # Enable pf with the config
+# without network
+$ qemu-system-x86_64 -m 1024 -boot once=c -nographic -kernel build/bzImage -initrd build/initramfs.cpio -drive format=raw,file=build/disk.img --append "console=ttyS0 nousb quiet root=/dev/sda1 rootfstype=ext4 selinux=0"
+# with network
+$ sudo qemu-system-x86_64 -m 1024 -boot once=c -nographic -kernel build/bzImage -initrd build/initramfs.cpio -drive format=raw,file=build/disk.img   -net tap,script=./qemu-ifup.sh,downscript=./qemu-ifdown.sh --append "console=ttyS0 nousb root=/dev/sda1 rootfstype=ext4 selinux=0"
 
 _____
 |  _ \
