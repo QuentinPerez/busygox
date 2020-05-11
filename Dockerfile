@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:eoan
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -11,6 +11,7 @@ RUN apt-get update \
     cpio \
     golang \
     qemu-system \
+    git \
   && apt-get clean
 
 WORKDIR /kernel-build
@@ -20,7 +21,7 @@ RUN curl -O https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.7.tar.xz \
 
 RUN cd linux-4.7 \
  && make x86_64_defconfig kvmconfig \
- && make -j16
+ && make -j$(nproc)
 
 WORKDIR /initfs/
 
@@ -39,9 +40,10 @@ RUN cd /initfs/fs \
   && mkdir -vm 0755 run \
   && mkdir -v proc sys
 
-COPY . $GOPATH/src/github.com/QuentinPerez/busygox
+WORKDIR /src/
+COPY . busygox
 
-RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
+RUN cd /src/busygox \
   && CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s -w' -o /initfs/fs/init ./cmd/init \
   && cd /initfs/fs && find . -print0 | cpio --null -ov --format=newc > /initfs/initramfs.cpio \
   && ldd init || true \
@@ -49,4 +51,4 @@ RUN cd $GOPATH/src/github.com/QuentinPerez/busygox \
 
 RUN go version
 
-ENTRYPOINT ["/go/src/github.com/QuentinPerez/busygox/entrypoint.sh"]
+ENTRYPOINT ["/src/busygox/entrypoint.sh"]
