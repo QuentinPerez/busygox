@@ -20,7 +20,7 @@ RUN curl -O https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.7.tar.xz \
 
 RUN cd linux-4.7 \
  && make x86_64_defconfig kvmconfig \
- && make -j16
+ && make -j$(nproc)
 
 WORKDIR /initfs/
 
