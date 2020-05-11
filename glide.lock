@@ -1,6 +1,0 @@
-hash: 71d6842ff7ed3603136ca6c2772253cc8e356044a7f029f9157756ad917f518b
-updated: 2016-08-05T21:36:58.241868884+02:00
-imports:
-- name: github.com/juju/errors
-  version: b2c7a7da5b2995941048f60146e67702a292e468
-devImports: []

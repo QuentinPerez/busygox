@@ -1,3 +1,0 @@
-package: github.com/QuentinPerez/busygox
-import:
-- package: github.com/juju/errors
